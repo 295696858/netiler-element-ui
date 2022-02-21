@@ -1209,20 +1209,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * 2022-02-18-netiler 新增，因适配其他分辨率，解决缩放定位出现的问题
      */
     function getScale() {
-      let scale = 1;
-      const hasZoomDom = document.querySelector(".netiler-ui-zoom-screen");
-      if(!hasZoomDom) return scale;
-      const hasZoom = typeof hasZoomDom._scale === "object";
-      const height = window.screen.height;
-      const width = window.screen.width;
-      if(hasZoom) {
+        let scale = 1;
+        const height = window.screen.height;
+        const width = window.screen.width;
         if (width < 1920) {
-          scale = width / 1920;
+            scale = width / 1920;
         } else if (width > 1920) {
-          scale = height / 1080;
+            scale = height / 1080;
         }
-      }
-      return scale;
+        return scale;
     }
     /**
      * Get the prefixed supported property name
