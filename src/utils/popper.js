@@ -414,13 +414,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         //
         var popperRect = getOuterSizes(popper);
 
+        var scale = getScale();
         //
         // Compute offsets of popper
         //
 
         // depending by the popper placement we have to compute its offsets slightly differently
         if (['right', 'left'].indexOf(placement) !== -1) {
-            popperOffsets.top = referenceOffsets.top + referenceOffsets.height / 2 - popperRect.height / 2;
+            popperOffsets.top = referenceOffsets.top + referenceOffsets.height / 2 - popperRect.height / 2
             if (placement === 'left') {
                 popperOffsets.left = referenceOffsets.left - popperRect.width;
             } else {
@@ -431,7 +432,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (placement === 'top') {
                 popperOffsets.top = referenceOffsets.top - popperRect.height;
             } else {
-                popperOffsets.top = referenceOffsets.bottom;
+              popperOffsets.top = referenceOffsets.bottom
             }
         }
 
@@ -1139,7 +1140,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         // position
         return elementRect;
     }
-
+    /**
+     * 2022-02-18-netiler 新增，因适配其他分辨率，解决缩放定位出现的问题
+     */
+    function getScale() {
+      let scale = 1;
+      const height = window.screen.height;
+      const width = window.screen.width;
+      if (width < 1920) {
+        scale = width / 1920;
+      } else if (width > 1920) {
+        scale = height / 1080;
+      }
+      return scale;
+    }
     /**
      * Get bounding client rect of given element
      * @function
@@ -1149,21 +1163,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      */
     function getBoundingClientRect(element) {
         var rect = element.getBoundingClientRect();
-
+        var scale = getScale();
         // whether the IE version is lower than 11
         var isIE = navigator.userAgent.indexOf("MSIE") != -1;
 
         // fix ie document bounding top always 0 bug
-        var rectTop = isIE && element.tagName === 'HTML' ? -element.scrollTop : rect.top;
-
-        return {
-            left: rect.left,
-            top: rectTop,
-            right: rect.right,
-            bottom: rect.bottom,
-            width: rect.right - rect.left,
-            height: rect.bottom - rectTop
-        };
+        var rectTop = isIE && element.tagName === 'HTML' ? -element.scrollTop : (rect.top + (rect.top / scale - rect.top));
+        var w = rect.right - rect.left;
+        var h = rect.bottom - rect.top;
+        var rect = {
+          left: rect.left + (rect.left / scale - rect.left),
+          top: rectTop,
+          right: rect.right - (rect.right / scale - rect.right),
+          bottom: rect.bottom - (rect.bottom / scale - rect.bottom),
+          width: w + (w / scale - w),
+          height: h + (h / scale - h)
+      }
+        return rect;
     }
 
     /**
@@ -1185,39 +1201,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             parentRect.left += scrollParent.scrollLeft;
             parentRect.right += scrollParent.scrollLeft;
         }
-        // 源码留存
-        // var rect = {
-        //     top: elementRect.top - parentRect.top,
-        //     left: elementRect.left - parentRect.left,
-        //     bottom: elementRect.top - parentRect.top + elementRect.height,
-        //     right: elementRect.left - parentRect.left + elementRect.width,
-        //     width: elementRect.width,
-        //     height: elementRect.height
-        // };
-        const scale = getScale();
         var rect = {
-            top: elementRect.top - parentRect.top - (elementRect.top * (scale - 1)),
-            left: elementRect.left - parentRect.left - (elementRect.left * (scale - 1)),
-            bottom: elementRect.top - parentRect.top + elementRect.height - (elementRect.top * (scale - 1)),
-            right: elementRect.left - parentRect.left + elementRect.width - (elementRect.left * (scale - 1)),
-            width: elementRect.width - (elementRect.width * (scale - 1)),
-            height: elementRect.height - (elementRect.height * (scale - 1))
+            top: elementRect.top - parentRect.top,
+            left: elementRect.left - parentRect.left,
+            bottom: elementRect.top - parentRect.top + elementRect.height,
+            right: elementRect.left - parentRect.left + elementRect.width,
+            width: elementRect.width,
+            height: elementRect.height
         };
         return rect;
-    }
-    /**
-     * 2022-02-18-netiler 新增，因适配其他分辨率，解决缩放定位出现的问题
-     */
-    function getScale() {
-        let scale = 1;
-        const height = window.screen.height;
-        const width = window.screen.width;
-        if (width < 1920) {
-            scale = width / 1920;
-        } else if (width > 1920) {
-            scale = height / 1080;
-        }
-        return scale;
     }
     /**
      * Get the prefixed supported property name
