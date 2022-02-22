@@ -1,6 +1,6 @@
 {
   "name": "netiler-element-ui",
-  "version": "2.15.7",
+  "version": "1.0.1",
   "description": "基于element-ui@2.15.7 单独维护原因： 因公司缩放适配分辨率的原因，修改了utils/popper.js，解决弹窗定位问题",
   "main": "lib/element-ui.common.js",
   "files": [
